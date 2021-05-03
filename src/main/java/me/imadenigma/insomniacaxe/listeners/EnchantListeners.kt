@@ -4,6 +4,7 @@ import me.imadenigma.insomniacaxe.InsomniacAxe
 import me.imadenigma.insomniacaxe.axe.AxeHolder
 import me.lucko.helper.Schedulers
 import me.mattstudios.mfgui.gui.components.ItemNBT
+import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
@@ -32,7 +33,9 @@ class EnchantListeners : Listener {
         }
         val axe = user.getAxeByUUID(uuid) ?: return
         axe.enchants.forEach { it.function(e) }
-
+        if (e.block.type == Material.MELON || e.block.type == Material.PUMPKIN) {
+            axe.brokenBlocks++
+        }
     }
 
     @EventHandler

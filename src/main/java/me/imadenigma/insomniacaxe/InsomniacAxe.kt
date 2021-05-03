@@ -1,23 +1,32 @@
 package me.imadenigma.insomniacaxe
 
-import me.imadenigma.insomniacaxe.command.Command
+import me.imadenigma.insomniacaxe.commands.GiveCommand
 import me.imadenigma.insomniacaxe.listeners.EnchantListeners
 import me.lucko.helper.Helper
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.plugin.ap.Plugin
+import me.lucko.helper.plugin.ap.PluginDependency
 import net.milkbowl.vault.economy.Economy
 
-@Plugin(name = "InsomniacAxe", version = "1.15")
+@Plugin(
+    name = "InsomniacAxe",
+    version = "1.15",
+    authors = ["Johan Liebert"],
+    depends = [
+        PluginDependency("Vault"),
+    ]
+    )
 class InsomniacAxe : ExtendedJavaPlugin() {
 
     private var manager: Manager? = null
-    var economy : Economy? = null
+    var economy: Economy? = null
         private set
+
     override fun enable() {
         // Plugin startup logic
         singleton = this
         Configuration()
-        registerCommand(Command(), "insomniac")
+        registerCommand(GiveCommand(), "insomniac")
         manager = Manager()
         manager!!.loadEnchantsFactory()
         manager!!.loadUsers()

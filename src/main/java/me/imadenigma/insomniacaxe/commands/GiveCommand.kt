@@ -1,4 +1,4 @@
-package me.imadenigma.insomniacaxe.command
+package me.imadenigma.insomniacaxe.commands
 
 import me.imadenigma.insomniacaxe.Configuration
 import me.imadenigma.insomniacaxe.axe.Axe
@@ -13,7 +13,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import java.util.*
 
-class Command : CommandExecutor {
+class GiveCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         // /insomniac give <player> <material> <level>
         if (args[0] == "give") {
@@ -42,9 +42,9 @@ class Command : CommandExecutor {
                 }
             } catch (e: NumberFormatException) {}
             val uuid = UUID.randomUUID()
-            val axe = Axe(level, material, mutableListOf(),uuid)
+            val axe = Axe(level, material, mutableListOf(),uuid, 0L)
             val enchant = Services.load(EnchantsFactory::class.java).enchants
-            axe.enchants.add(enchant["speed"]!!)
+            enchant.forEach { axe.enchants.add(it.value) }
             val holder = AxeHolder.getHolder(player)
             holder.giveAxe(axe)
             sender.sendMessage("&3You gave ${player.displayName} &3Axe successfully".colorize())

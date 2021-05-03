@@ -1,5 +1,7 @@
 axe-name: "Insomniac Axe"
-gui-size: 36 #Must be multiples of 9
+gui:
+  lines: 3
+  title: "&aEnchants Shop"
 
 levels:
   1:
@@ -14,24 +16,50 @@ enchants:
     enabled: true
     slot: 10
     item: GOLD
+    glow: true
+    price: 100
+    lore:
+      - "&3Price: 100"
+      - "selling automatically blocks"
   zeus:
     name: "&3Zeus"
     enabled: true
     slot: 12
     item: POTATO
     percentage: 10 #10%
+    glow: true
+    price: 1000
+    lore:
+      - "&3Price: 1000"
+      - "&4It will give you the imaginary power of zeus"
   speed:
     name: "&cSpeed"
     enabled: true
     slot: 14
     item: SUGAR
+    glow: true
+    price: 100
+    lore:
+      - "&3Price: 100"
+      - "Speed while holding"
   haste:
     name: "&aHaste"
     enabled: true
     slot: 16
     item: GOLDEN_AXE
+    glow: true
+    price: 100
+    lore:
+      - "&3Price: 100"
+      - "Haste while holding"
   destroyer:
     name: "&4Destroyer"
     enabled: true
     slot: 18
     item: ACACIA_BUTTON
+    glow: true
+    price: 100
+    lore:
+      - "&3Price: 100"
+      - "Destroy blocks..."
+

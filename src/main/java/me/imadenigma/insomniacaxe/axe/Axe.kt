@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 import java.lang.IllegalArgumentException
 import java.util.*
 
-class Axe(val level: Int, val material: Material, val enchants: MutableList<Enchant>, val uuid: UUID) : GsonSerializable {
+class Axe(val level: Int, val material: Material, val enchants: MutableList<Enchant>, val uuid: UUID, var brokenBlocks: Long) : GsonSerializable {
 
     override fun serialize(): JsonElement {
         val jsonArray = JsonArray()
@@ -24,6 +24,7 @@ class Axe(val level: Int, val material: Material, val enchants: MutableList<Ench
             .add("level",level)
             .add("material",material.name)
             .add("uuid", this.uuid.toString())
+            .add("blocks",this.brokenBlocks)
             .add("enchants", jsonArray)
             .build()
     }
@@ -36,6 +37,7 @@ class Axe(val level: Int, val material: Material, val enchants: MutableList<Ench
             val material = Material.matchMaterial(objet.get("material").asString)
             val uuid = UUID.fromString(objet.get("uuid").asString)
             val array = objet.get("enchants").asJsonArray.map { it.asString }.toList()
+            val brokenBlocks = objet.get("blocks").asLong
             println(array)
             val enchants = mutableListOf<Enchant>()
             val names = Services.load(EnchantsFactory::class.java).enchants.values
@@ -43,7 +45,7 @@ class Axe(val level: Int, val material: Material, val enchants: MutableList<Ench
                 println(i)
                 enchants.add(names.stream().filter { ChatColor.stripColor(it.name).equals(i,true) }.findAny().get())
             }
-            return Axe(level,material!!,enchants, uuid)
+            return Axe(level,material!!,enchants, uuid, brokenBlocks)
         }
 
         fun isAxe(item: ItemStack): Boolean {

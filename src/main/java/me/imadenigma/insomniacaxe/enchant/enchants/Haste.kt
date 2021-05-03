@@ -11,9 +11,10 @@ import org.bukkit.potion.PotionEffectType
 
 class Haste(
     override val name: String, override val isEnabled: Boolean, override val slot: Int,
-    override val material: Material
+    override val material: Material, override val isGlowing: Boolean, override val price: Double,
+    override val lore: List<String>
 ) :
-    Enchant(name, isEnabled, slot, material)  {
+    Enchant(name, isEnabled, slot, material, isGlowing, price, lore)  {
 
     override fun function(e: Event) {
         if (e !is PlayerItemHeldEvent) return

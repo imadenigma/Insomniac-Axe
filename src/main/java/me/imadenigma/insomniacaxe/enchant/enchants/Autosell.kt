@@ -15,9 +15,10 @@ import java.util.*
 
 class Autosell(
     override val name: String, override val isEnabled: Boolean, override val slot: Int,
-    override val material: Material
+    override val material: Material, override val isGlowing: Boolean, override val price: Double,
+    override val lore: List<String>
 ) :
-    Enchant(name, isEnabled, slot, material) {
+    Enchant(name, isEnabled, slot, material, isGlowing, price, lore) {
 
     override fun function(e: Event) {
         if (e !is BlockBreakEvent) return
@@ -26,7 +27,7 @@ class Autosell(
         if (e.block.type == Material.PUMPKIN || e.block.type == Material.MELON) {
             InsomniacAxe.singleton.economy!!.depositPlayer(e.player, ShopGuiPlusApi.getItemStackPriceSell(
                 ItemStack(e.block.type)
-            ) * AxeLevel.getBoosterVal(axe?.level!!))
+            ) * (1 + AxeLevel.getBoosterVal(axe?.level!!)))
             e.block.drops.clear()
         }
     }

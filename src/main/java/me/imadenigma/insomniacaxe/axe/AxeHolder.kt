@@ -10,6 +10,7 @@ import me.lucko.helper.Services
 import me.lucko.helper.config.ConfigurationNode
 import me.lucko.helper.gson.GsonSerializable
 import me.lucko.helper.gson.JsonBuilder
+import me.lucko.helper.utils.Log
 import me.mattstudios.mfgui.gui.components.ItemNBT
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -21,7 +22,8 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
     private val configuration : ConfigurationNode
     init {
         users.add(this)
-        configuration = Services.load(Configuration::class.java).configNode
+        this.configuration = Services.load(Configuration::class.java).configNode
+        Log.info("Handling join of ${offlinePlayer.name}, his/her uuid: ${offlinePlayer.uniqueId}")
     }
 
     fun isValid() : Boolean {
@@ -65,11 +67,19 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
         return this.axes.stream().filter { it.uuid == uuid }.findAny().orElse(null)
     }
 
+    fun isHoldingAxe() : Boolean {
+        if (!this.offlinePlayer.isOnline) return false
+        val player = this.offlinePlayer.player!!
+        val item = player.inventory.itemInMainHand
+        if (item.type.name.contains("_AXE")) return true
+        return false
+    }
+
     companion object {
         val users = mutableSetOf<AxeHolder>()
 
         fun getHolder(offlinePlayer: OfflinePlayer): AxeHolder {
-            return users.stream().filter { it.offlinePlayer == offlinePlayer }.findAny().orElse(
+            return users.stream().filter { it.offlinePlayer.uniqueId == offlinePlayer.uniqueId }.findAny().orElse(
                 AxeHolder(
                     offlinePlayer,
                     mutableListOf()
