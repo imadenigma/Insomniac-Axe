@@ -1,0 +1,4 @@
+name: InsomniacAxe
+version: ${project.version}
+main: me.imadenigma.insomniacaxe.InsomniacAxe
+api-version: 1.15

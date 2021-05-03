@@ -1,0 +1,37 @@
+axe-name: "Insomniac Axe"
+gui-size: 36 #Must be multiples of 9
+
+levels:
+  1:
+    booster: 0.10
+    blocksToNextLevel: 1000
+  2:
+    booster: 0.20
+    blocksToNextLevel: 2000
+enchants:
+  autosell:
+    name: "&4autosell"
+    enabled: true
+    slot: 10
+    item: GOLD
+  zeus:
+    name: "&3Zeus"
+    enabled: true
+    slot: 12
+    item: POTATO
+    percentage: 10 #10%
+  speed:
+    name: "&cSpeed"
+    enabled: true
+    slot: 14
+    item: SUGAR
+  haste:
+    name: "&aHaste"
+    enabled: true
+    slot: 16
+    item: GOLDEN_AXE
+  destroyer:
+    name: "&4Destroyer"
+    enabled: true
+    slot: 18
+    item: ACACIA_BUTTON
