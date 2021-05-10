@@ -2,8 +2,11 @@ package me.imadenigma.insomniacaxe.listeners
 
 import me.imadenigma.insomniacaxe.InsomniacAxe
 import me.imadenigma.insomniacaxe.axe.AxeHolder
+import me.imadenigma.insomniacaxe.isInsoBlock
+import me.imadenigma.insomniacaxe.ordered
 import me.lucko.helper.Schedulers
 import me.mattstudios.mfgui.gui.components.ItemNBT
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -31,32 +34,45 @@ class EnchantListeners : Listener {
                 return
             }
         }
+        e.isDropItems = false
+        user.drops.addAll(e.block.drops)
         val axe = user.getAxeByUUID(uuid) ?: return
-        axe.enchants.forEach { it.function(e) }
-        if (e.block.type == Material.MELON || e.block.type == Material.PUMPKIN) {
+        axe.enchants.ordered().forEach { it.function(e) }
+        if (e.block.isInsoBlock()) {
             axe.brokenBlocks++
+            e.block.drops.clear()
+            user.drops.forEach {
+                e.block.world.dropItem(e.block.location, it)
+            }
         }
+        user.drops.clear()
+
     }
 
     @EventHandler
     fun onAxeHold(e: PlayerItemHeldEvent) {
-        println("previous: ${e.previousSlot} and next: ${e.newSlot}")
         Schedulers.sync().runLater({
             val user = AxeHolder.getHolder(e.player)
             if (!user.isValid()) return@runLater
             if (!user.isHoldingInsoAxe()) {
                 user.axes.forEach { axe ->
-                    axe.enchants.forEach { it.function(e) }
+                    axe.enchants.forEach {
+                        it.function(e)
+                    }
                 }
                 return@runLater
             }
             val nbtVal = ItemNBT.getNBTTag(e.player.inventory.itemInMainHand, "uuid")
             val uuid = UUID.fromString(nbtVal)
             val axe = user.getAxeByUUID(uuid) ?: return@runLater
-            axe.enchants.forEach { it.function(e) }
+            for (ench in axe.enchants.ordered()) {
+                ench.function(e)
+            }
         },3L)
     }
 }
+
+
 
 
 

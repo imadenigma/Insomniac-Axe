@@ -8,14 +8,14 @@ import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.milkbowl.vault.economy.Economy
 
+
 @Plugin(
     name = "InsomniacAxe",
-    version = "1.15",
-    authors = ["Johan Liebert"],
+    apiVersion = "1.15",
     depends = [
-        PluginDependency("Vault"),
+        PluginDependency("Vault")
     ]
-    )
+)
 class InsomniacAxe : ExtendedJavaPlugin() {
 
     private var manager: Manager? = null
@@ -31,7 +31,7 @@ class InsomniacAxe : ExtendedJavaPlugin() {
         manager!!.loadEnchantsFactory()
         manager!!.loadUsers()
         registerListeners()
-
+        setupEconomy()
     }
 
     private fun registerListeners() {

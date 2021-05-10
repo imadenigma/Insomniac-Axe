@@ -1,5 +1,6 @@
 package me.imadenigma.insomniacaxe.axe
 
+import com.google.common.base.Suppliers
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import me.imadenigma.insomniacaxe.Configuration
@@ -20,6 +21,7 @@ import java.util.*
 
 class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : GsonSerializable {
     private val configuration : ConfigurationNode
+    val drops = mutableSetOf<ItemStack>()
     init {
         users.add(this)
         this.configuration = Services.load(Configuration::class.java).configNode
@@ -34,8 +36,23 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
 
     fun isHoldingInsoAxe() : Boolean {
         if (!offlinePlayer.isOnline) return false
+        if (!this.isHoldingAxe()) return false
         val name = this.configuration.getNode("axe-name").string!!
         return this.offlinePlayer.player?.inventory?.itemInMainHand?.getDisplayName().equals(name) && this.axes.isNotEmpty()
+    }
+
+    fun countBreakingBlocks() {
+        if (!offlinePlayer.isOnline) return
+        if (!this.isHoldingInsoAxe()) return
+        val axe = getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid"))) ?: return
+        axe.brokenBlocks++
+    }
+
+    fun getAxeInMainHand() : Axe? {
+        if (!offlinePlayer.isOnline) return null
+        if (!this.isHoldingInsoAxe()) return null
+        val axe = getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid")))
+        return axe
     }
 
     override fun serialize(): JsonElement {
@@ -60,6 +77,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
             player.world.dropItem(player.location,ax )
         }else player?.inventory?.addItem(ax)
         this.axes.add(axe)
+        println("donated")
         return true
     }
 
@@ -67,7 +85,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
         return this.axes.stream().filter { it.uuid == uuid }.findAny().orElse(null)
     }
 
-    fun isHoldingAxe() : Boolean {
+    private fun isHoldingAxe() : Boolean {
         if (!this.offlinePlayer.isOnline) return false
         val player = this.offlinePlayer.player!!
         val item = player.inventory.itemInMainHand
@@ -79,12 +97,12 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
         val users = mutableSetOf<AxeHolder>()
 
         fun getHolder(offlinePlayer: OfflinePlayer): AxeHolder {
-            return users.stream().filter { it.offlinePlayer.uniqueId == offlinePlayer.uniqueId }.findAny().orElse(
-                AxeHolder(
-                    offlinePlayer,
-                    mutableListOf()
-                )
-            )
+
+            val optional =  users.stream().filter { it.offlinePlayer.uniqueId == offlinePlayer.uniqueId }.findAny()
+            if (optional.isPresent) {
+                return optional.get()
+            }
+            return AxeHolder(offlinePlayer, mutableListOf())
         }
 
         fun deserialize(element: JsonElement): AxeHolder {

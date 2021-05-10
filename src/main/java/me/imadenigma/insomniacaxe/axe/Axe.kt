@@ -43,12 +43,14 @@ class Axe(val level: Int, val material: Material, val enchants: MutableList<Ench
             val names = Services.load(EnchantsFactory::class.java).enchants.values
             for (i in array) {
                 println(i)
-                enchants.add(names.stream().filter { ChatColor.stripColor(it.name).equals(i,true) }.findAny().get())
+                val ench = names.stream().filter { ChatColor.stripColor(it.name).equals(i,true) }.findAny().get()
+                enchants.add(ench)
             }
             return Axe(level,material!!,enchants, uuid, brokenBlocks)
         }
 
         fun isAxe(item: ItemStack): Boolean {
+            @Suppress("SENSELESS_COMPARISON")
             if (item == null) return false
             if (item.type.name.contains("axe",true)) {
                 try {

@@ -2,6 +2,9 @@ axe-name: "Insomniac Axe"
 gui:
   lines: 3
   title: "&aEnchants Shop"
+pumpkin-top:
+  format: "&3{0} --> {1}" #0 is the name of player and 1 is the balance
+  size: 5 #how many players in the list
 
 levels:
   1:
@@ -57,9 +60,18 @@ enchants:
     enabled: true
     slot: 18
     item: ACACIA_BUTTON
-    glow: true
+    glow: false
     price: 100
     lore:
       - "&3Price: 100"
       - "Destroy blocks..."
-
+  doubledrops:
+    name: "&4Double Drops"
+    enabled: true
+    slot: 20
+    item: DIAMOND
+    glow: true
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "Double drops each time"
