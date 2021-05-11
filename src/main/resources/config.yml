@@ -37,7 +37,7 @@ enchants:
       - "&4It will give you the imaginary power of zeus"
   speed:
     name: "&cSpeed"
-    enabled: true
+    enabled: false
     slot: 14
     item: SUGAR
     glow: true
@@ -70,6 +70,26 @@ enchants:
     enabled: true
     slot: 20
     item: DIAMOND
+    glow: true
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "Double drops each time"
+  frenzy:
+    name: "&4Frenzy"
+    enabled: true
+    slot: 22
+    item: APPLE
+    glow: true
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "Frenzy"
+  sunrise:
+    name: "&4Sunrise"
+    enabled: true
+    slot: 24
+    item: PUMPKIN
     glow: true
     price: 200
     lore:

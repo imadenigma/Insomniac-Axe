@@ -23,11 +23,17 @@ class EnchantGui(player: Player, lines: Int, title: String) {
         for (enchant in enchants) {
             val lore = enchant.lore.toMutableList()
             val balanceCheck = InsomniacAxe.singleton.economy!!.getBalance(player) < enchant.price
+            var owningCheck = false
             if (balanceCheck) {
                 lore.add("&4You don't have balance to purchase it".colorize())
             }
             if (!user.isHoldingInsoAxe()) {
                 lore.add("&4You aren't Holding an insomniac axe".colorize())
+            }else {
+                owningCheck = user.getAxeInMainHand()!!.enchants.contains(enchant)
+                if (owningCheck) {
+                    lore.add("&4You already own this enchant".colorize())
+                }
             }
             val item = ItemBuilder.from(enchant.material)
                 .glow(enchant.isGlowing)
@@ -41,6 +47,10 @@ class EnchantGui(player: Player, lines: Int, title: String) {
                 }
                 if (!user.isHoldingInsoAxe()) {
                     player.sendMessage("&4You aren't holding an axe".colorize())
+                    return@asGuiItem
+                }
+                if (owningCheck) {
+                    player.sendMessage("&4You already own this enchant".colorize())
                     return@asGuiItem
                 }
                 val axe = user.getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(player.inventory.itemInMainHand, "uuid"))) ?: run {

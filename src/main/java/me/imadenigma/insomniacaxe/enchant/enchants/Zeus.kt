@@ -24,32 +24,21 @@ class Zeus(
         val random = RandomUtils.nextInt(100)
         if (random > percentage) return
         val user = e.getUser()!!
-        val chunk1 = e.player.location.chunk
-        val chunk2 = e.player.location.add(17.0, 0.0, 17.0).chunk
         var blocksSize = 0
-        for (i in 0..15) {
-            for (j in 0..15) {
-                val block = chunk1.getBlock(i, e.block.y , j)
-                val block2 = chunk2.getBlock(i, e.block.y, j)
+        val axe = user.getAxeInMainHand()!!
+        for (i in -50..50) {
+            for (j in -50..50) {
+                val block = e.block.world.getHighestBlockAt(e.block.location.add(i.toDouble(),0.0,j.toDouble()))
                 if (block.isInsoBlock()) {
-                    val lightning = e.player.world.spawn(block.location, LightningStrike::class.java)
-                    user.drops.addAll(block.drops)
+                    e.player.world.spawn(block.location, LightningStrike::class.java)
+                    user.drops.forEach { it.amount += 1 }
                     block.drops.clear()
                     block.breakNaturally()
-                    blocksSize++
-
-                }
-                if (block2.isInsoBlock()) {
-                    val lightning = e.player.world.spawn(block.location, LightningStrike::class.java)
-                    user.drops.addAll(block2.drops)
-                    block2.drops.clear()
-                    block2.breakNaturally()
                     blocksSize++
                 }
             }
         }
-
-
+        axe.brokenBlocks += blocksSize
     }
 
 }

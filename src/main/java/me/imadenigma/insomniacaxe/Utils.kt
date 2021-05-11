@@ -42,9 +42,11 @@ fun Block.isInsoBlock() : Boolean {
     if (this.type == Material.PUMPKIN || this.type == Material.MELON) return true
     return false
 }
+
 fun MutableList<Enchant>.ordered(): List<Enchant> {
     return this.sortedBy { it::class.java.getAnnotation(EnchPriority::class.java).priority }
 }
+
 fun Block.addDrop(amount: Int,block: Block) {
     val optional = this.drops.stream().filter { it.type == block.type }.findAny()
     this.drops.clear()
@@ -54,9 +56,10 @@ fun Block.addDrop(amount: Int,block: Block) {
 }
 
 fun ItemStack.addEnchant(enchant: Enchant) {
-    val lore = this.lore ?: mutableListOf()
+    if (this.itemMeta == null) this.itemMeta = Bukkit.getItemFactory().getItemMeta(this.type)
+    val lore = this.itemMeta.lore ?: mutableListOf()
     lore.add(0,enchant.name)
-    this.lore = lore
+    this.itemMeta.lore = lore
 }
 
 fun Event.getUser() : AxeHolder? {
