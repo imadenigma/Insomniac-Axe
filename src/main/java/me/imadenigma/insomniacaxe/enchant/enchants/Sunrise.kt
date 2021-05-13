@@ -1,9 +1,12 @@
 package me.imadenigma.insomniacaxe.enchant.enchants
 
 import me.imadenigma.insomniacaxe.InsomniacAxe
+import me.imadenigma.insomniacaxe.Manager
 import me.imadenigma.insomniacaxe.enchant.Enchant
 import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.enchant.priority.Priority
+import me.imadenigma.insomniacaxe.getUser
+import me.imadenigma.insomniacaxe.holder.AxeHolder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -20,7 +23,7 @@ class Sunrise(
     override fun function(e: Event) {
         if (e !is BlockBreakEvent) return
         if (!e.player.world.isDayTime) return
-        increaseGems(e.player)
+        increaseCoins(e.getUser()!!)
         increaseMoney(e.player)
     }
 
@@ -29,8 +32,8 @@ class Sunrise(
         economy.depositPlayer(player,0.01 * economy.getBalance(player))
     }
 
-    private fun increaseGems(player: @NotNull Player) {
-        println("Increasing Gems")
+    private fun increaseCoins(axeHolder: AxeHolder) {
+        axeHolder.give((0.01 * Manager.coins).toLong())
     }
 
 }

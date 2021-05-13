@@ -11,18 +11,29 @@ import kotlin.system.measureTimeMillis
 
 class Configuration {
     var configNode: ConfigurationNode
+    var languageNode: ConfigurationNode
     init {
         val ms = measureTimeMillis {
-            val file = File(InsomniacAxe.singleton.dataFolder, "config.yml")
-            file.makeReady()
-            val loader = YAMLConfigurationLoader.builder().setFile(file).build()
 
-            if (!loader.canLoad()) {
+            val configFile = File(InsomniacAxe.singleton.dataFolder, "config.yml")
+            configFile.makeReady()
+            val configLoader = YAMLConfigurationLoader.builder().setFile(configFile).build()
+
+            val languageFile = File(InsomniacAxe.singleton.dataFolder, "language.yml")
+            languageFile.makeReady()
+            val languageLoader = YAMLConfigurationLoader.builder().setFile(languageFile).build()
+
+            if (!configLoader.canLoad()) {
                 Log.warn("Could not load config file!!!")
                 Bukkit.getPluginManager().disablePlugin(InsomniacAxe.singleton)
             }
+            if (!languageLoader.canLoad()) {
+                Log.warn("Could not load language file!!!")
+                Bukkit.getPluginManager().disablePlugin(InsomniacAxe.singleton)
+            }
 
-            configNode = loader.load()
+            configNode = configLoader.load()
+            languageNode = languageLoader.load()
             val boost = mutableMapOf<Int, Float>()
             val blocks = mutableMapOf<Int, Int>()
 

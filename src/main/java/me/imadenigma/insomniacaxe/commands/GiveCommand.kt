@@ -3,13 +3,13 @@ package me.imadenigma.insomniacaxe.commands
 import me.imadenigma.insomniacaxe.Configuration
 import me.imadenigma.insomniacaxe.InsomniacAxe
 import me.imadenigma.insomniacaxe.axe.Axe
-import me.imadenigma.insomniacaxe.axe.AxeHolder
+import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.imadenigma.insomniacaxe.colorize
-import me.imadenigma.insomniacaxe.enchant.EnchantsFactory
 import me.imadenigma.insomniacaxe.gui.EnchantGui
 import me.lucko.helper.Helper
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
+import me.mattstudios.mfgui.gui.components.ItemNBT
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -65,6 +65,9 @@ class GiveCommand : CommandExecutor {
                 }, 10L
             )
             Helper.plugins().disablePlugin(InsomniacAxe.singleton)
+        }
+        if (args[0] == "nbt") {
+            sender.sendMessage(ItemNBT.getNBTTag((sender as Player)?.inventory?.itemInMainHand, "uuid"))
         }
         return false
     }

@@ -1,7 +1,7 @@
 
 package me.imadenigma.insomniacaxe
 
-import me.imadenigma.insomniacaxe.axe.AxeHolder
+import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.enchant.Enchant
 import me.lucko.helper.Helper
@@ -9,6 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
@@ -56,10 +57,18 @@ fun Block.addDrop(amount: Int,block: Block) {
 }
 
 fun ItemStack.addEnchant(enchant: Enchant) {
-    if (this.itemMeta == null) this.itemMeta = Bukkit.getItemFactory().getItemMeta(this.type)
-    val lore = this.itemMeta.lore ?: mutableListOf()
+    val meta = this.itemMeta ?: Bukkit.getItemFactory().getItemMeta(this.type)
+    val lore = meta.lore ?: mutableListOf()
     lore.add(0,enchant.name)
-    this.itemMeta.lore = lore
+    meta.lore = lore
+    this.itemMeta = meta
+    println("lore changed!")
+}
+
+fun Player.giveItem(item: ItemStack) {
+    if (this.inventory.firstEmpty() == -1) {
+        this.world.dropItem(this.location,item )
+    }else this.inventory.addItem(item)
 }
 
 fun Event.getUser() : AxeHolder? {

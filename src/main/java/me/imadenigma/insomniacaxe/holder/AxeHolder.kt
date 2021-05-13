@@ -1,9 +1,9 @@
-package me.imadenigma.insomniacaxe.axe
+package me.imadenigma.insomniacaxe.holder
 
-import com.google.common.base.Suppliers
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import me.imadenigma.insomniacaxe.Configuration
+import me.imadenigma.insomniacaxe.axe.Axe
 import me.imadenigma.insomniacaxe.colorize
 import me.imadenigma.insomniacaxe.getDisplayName
 import me.imadenigma.insomniacaxe.setDisplayName
@@ -14,14 +14,15 @@ import me.lucko.helper.gson.JsonBuilder
 import me.lucko.helper.utils.Log
 import me.mattstudios.mfgui.gui.components.ItemNBT
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
+import java.lang.IllegalArgumentException
 import java.util.*
 
-class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : GsonSerializable {
+class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>, var balance: Long) : GsonSerializable, Currency {
     private val configuration : ConfigurationNode
     val drops = mutableSetOf<ItemStack>()
+    var zeus = false
     init {
         users.add(this)
         this.configuration = Services.load(Configuration::class.java).configNode
@@ -37,8 +38,12 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
     fun isHoldingInsoAxe() : Boolean {
         if (!offlinePlayer.isOnline) return false
         if (!this.isHoldingAxe()) return false
-        val name = this.configuration.getNode("axe-name").string!!
-        return this.offlinePlayer.player?.inventory?.itemInMainHand?.getDisplayName().equals(name) && this.axes.isNotEmpty()
+        try {
+            UUID.fromString(ItemNBT.getNBTTag(this.offlinePlayer.player!!.inventory.itemInMainHand, "uuid"))
+        }catch (e: IllegalArgumentException) {
+            return false
+        }
+        return this.axes.isNotEmpty()
     }
 
     fun countBreakingBlocks() {
@@ -48,11 +53,10 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
         axe.brokenBlocks++
     }
 
-    fun getAxeInMainHand() : Axe? {
+    fun getAxeInMainHand(): Axe? {
         if (!offlinePlayer.isOnline) return null
         if (!this.isHoldingInsoAxe()) return null
-        val axe = getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid")))
-        return axe
+        return getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid")))
     }
 
     override fun serialize(): JsonElement {
@@ -62,6 +66,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
         }
         return JsonBuilder.`object`()
             .add("uuid", offlinePlayer.uniqueId.toString())
+            .add("balance",this.balance)
             .add("axes", jsonArray)
             .build()
     }
@@ -102,17 +107,29 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>) : 
             if (optional.isPresent) {
                 return optional.get()
             }
-            return AxeHolder(offlinePlayer, mutableListOf())
+            return AxeHolder(offlinePlayer, mutableListOf(), 0L)
         }
 
-        fun deserialize(element: JsonElement): AxeHolder {
+        fun deserialize(element: JsonElement) {
             val objet = element.asJsonObject
             val uuid = UUID.fromString(objet.get("uuid").asString)
+            val balance = objet.get("balance").asLong
             val axeList = mutableListOf<Axe>()
             objet.get("axes").asJsonArray.map {
                 axeList.add(Axe.deserialize(it))
             }
-            return AxeHolder(Bukkit.getOfflinePlayer(uuid),axeList)
+            if (users.any { it.offlinePlayer.uniqueId == uuid }) return
+            AxeHolder(Bukkit.getOfflinePlayer(uuid),axeList, balance)
         }
     }
+
+    override fun give(amount: Long) {
+        this.balance += amount
+    }
+
+    override fun take(amount: Long) {
+        this.balance -= balance
+    }
+
+
 }

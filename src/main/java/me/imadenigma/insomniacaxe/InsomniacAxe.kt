@@ -1,7 +1,10 @@
 package me.imadenigma.insomniacaxe
 
+import me.imadenigma.insomniacaxe.commands.CoinsCommand
 import me.imadenigma.insomniacaxe.commands.GiveCommand
+import me.imadenigma.insomniacaxe.commands.PumpkinTop
 import me.imadenigma.insomniacaxe.listeners.EnchantListeners
+import me.imadenigma.insomniacaxe.listeners.PlayerListeners
 import me.lucko.helper.Helper
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.plugin.ap.Plugin
@@ -13,7 +16,8 @@ import net.milkbowl.vault.economy.Economy
     name = "InsomniacAxe",
     apiVersion = "1.15",
     depends = [
-        PluginDependency("Vault")
+        PluginDependency("Vault"),
+        PluginDependency("ShopGUIPlus")
     ]
 )
 class InsomniacAxe : ExtendedJavaPlugin() {
@@ -27,6 +31,8 @@ class InsomniacAxe : ExtendedJavaPlugin() {
         singleton = this
         Configuration()
         registerCommand(GiveCommand(), "insomniac")
+        registerCommand(CoinsCommand(), "ngems")
+        registerCommand(PumpkinTop(), "pumpkintop")
         manager = Manager()
         manager!!.loadEnchantsFactory()
         manager!!.loadUsers()
@@ -36,6 +42,7 @@ class InsomniacAxe : ExtendedJavaPlugin() {
 
     private fun registerListeners() {
         EnchantListeners()
+        PlayerListeners()
     }
 
     override fun disable() {

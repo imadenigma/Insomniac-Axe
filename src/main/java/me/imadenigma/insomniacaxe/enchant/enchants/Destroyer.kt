@@ -1,20 +1,18 @@
 package me.imadenigma.insomniacaxe.enchant.enchants
 
-import me.imadenigma.insomniacaxe.axe.AxeHolder
+import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.enchant.Enchant
 import me.imadenigma.insomniacaxe.enchant.priority.Priority
 import me.imadenigma.insomniacaxe.getUser
 import me.imadenigma.insomniacaxe.isInsoBlock
-import me.mattstudios.mfgui.gui.components.ItemNBT
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
-import java.util.*
 
-@EnchPriority(Priority.LOW)
+@EnchPriority(Priority.LOWEST)
 class Destroyer(
     override val name: String, override val isEnabled: Boolean, override val slot: Int,
     override val material: Material, override val isGlowing: Boolean, override val price: Double,

@@ -14,8 +14,13 @@ import org.bukkit.inventory.ItemStack
 import java.lang.IllegalArgumentException
 import java.util.*
 
-class Axe(val level: Int, val material: Material, val enchants: MutableList<Enchant>, val uuid: UUID, var brokenBlocks: Long) : GsonSerializable {
+class Axe(var level: Int, val material: Material, val enchants: MutableList<Enchant>, val uuid: UUID, var brokenBlocks: Long) : GsonSerializable {
 
+    init {
+        axes.add(this)
+    }
+
+    var brokenPumpkins: Long = 0L
     override fun serialize(): JsonElement {
         val jsonArray = JsonArray()
         for (name in enchants.stream().map { it.name })
@@ -30,7 +35,7 @@ class Axe(val level: Int, val material: Material, val enchants: MutableList<Ench
     }
 
     companion object {
-
+        val axes = mutableSetOf<Axe>()
         fun deserialize(element: JsonElement) : Axe {
             val objet = element.asJsonObject
             val level = objet.get("level").asInt

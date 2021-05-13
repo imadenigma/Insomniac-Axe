@@ -1,0 +1,19 @@
+player-receive-axe: "&3Congrats you received an insomniac axe !"
+player-upgrade-level: "&3Congrats you upgraded your axe's level !"
+player-balance: "&4Your Nightmare gems balance: &a{0}" #{0} will be replaced by the value
+player-buy-enchant: "&eYou bought {0} Successfully" #{0} will be replaced by the enchant's name
+player-receive-ngems: "&aYou received {0} nightmare gems"
+
+
+enchants:
+  destroyer: "" #if you leave the message like this "" or not writing it at all it will be not sent
+  double-coins: ""
+  double-drops: ""
+  eclipse: ""
+  frenzy: ""
+  haste: ""
+  implants: ""
+  rampage: ""
+  speed: ""
+  sunrise: ""
+  zeus: ""

@@ -1,18 +1,22 @@
 package me.imadenigma.insomniacaxe.enchant.enchants
 
-import me.imadenigma.insomniacaxe.axe.AxeHolder
-import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.enchant.Enchant
+import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.enchant.priority.Priority
 import me.imadenigma.insomniacaxe.getUser
+import me.imadenigma.insomniacaxe.giveItem
 import me.imadenigma.insomniacaxe.isInsoBlock
+import me.lucko.helper.Schedulers
 import org.apache.commons.lang.math.RandomUtils
+import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.entity.LightningStrike
+import org.bukkit.block.Block
 import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
+import java.util.concurrent.TimeUnit
 
-@EnchPriority(Priority.LOWEST)
+
+@EnchPriority(Priority.MEDIUM)
 class Zeus(
     override val name: String, override val isEnabled: Boolean, override val slot: Int,
     override val material: Material, private val percentage: Float, override val isGlowing: Boolean,
@@ -26,19 +30,43 @@ class Zeus(
         val user = e.getUser()!!
         var blocksSize = 0
         val axe = user.getAxeInMainHand()!!
-        for (i in -50..50) {
-            for (j in -50..50) {
-                val block = e.block.world.getHighestBlockAt(e.block.location.add(i.toDouble(),0.0,j.toDouble()))
-                if (block.isInsoBlock()) {
-                    e.player.world.spawn(block.location, LightningStrike::class.java)
-                    user.drops.forEach { it.amount += 1 }
-                    block.drops.clear()
-                    block.breakNaturally()
-                    blocksSize++
+        getNearbyBlocks(e.block.location, 30)
+            .filter { it.isInsoBlock() }
+            .filter { it.type == e.block.type }
+            .forEach {
+                user.drops.forEach { drop -> drop.amount += 1 }
+                e.player.world.strikeLightningEffect(it.location)
+                it.type = Material.AIR
+                it.state.update()
+                blocksSize++
+            }
+        user.drops.forEach { drop -> drop.amount -= 1 }
+        user.zeus = true
+        if (!axe.enchants.any { it is Autosell }) {
+            if (axe.enchants.any { it is DoubleDrops }) {
+                user.drops.forEach {
+                    it.amount *= 2
                 }
             }
+            user.drops.forEach {
+                e.player.giveItem(it)
+                println("w dbb?")
+            }
+            user.drops.clear()
         }
+
         axe.brokenBlocks += blocksSize
     }
 
+    private fun getNearbyBlocks(location: Location, radius: Int): Set<Block> {
+        val blocks = mutableSetOf<Block>()
+        for (x in location.blockX - radius..location.blockX + radius) {
+            for (y in location.blockY..location.blockY + radius) {
+                for (z in location.blockZ - radius..location.blockZ + radius) {
+                    blocks.add(location.world.getBlockAt(x, y, z))
+                }
+            }
+        }
+        return blocks
+    }
 }

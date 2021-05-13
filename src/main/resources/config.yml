@@ -1,4 +1,5 @@
 axe-name: "Insomniac Axe"
+coins-to-add: 50
 gui:
   lines: 3
   title: "&aEnchants Shop"
@@ -18,7 +19,7 @@ enchants:
     name: "&4autosell"
     enabled: true
     slot: 10
-    item: GOLD
+    item: DIAMOND_SWORD
     glow: true
     price: 100
     lore:
@@ -95,3 +96,43 @@ enchants:
     lore:
       - "&3Price: 200"
       - "Double drops each time"
+  eclipse:
+    name: "&3Eclipse"
+    enabled: true
+    slot: 26
+    item: GOLDEN_APPLE
+    glow: false
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "1.5% booster at night"
+  double-coins:
+    name: "&4Double Coins"
+    enabled: false
+    slot: 28
+    item: ANVIL
+    glow: false
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "Double coins each time"
+  rampage:
+    name: "&4Rampage"
+    enabled: false
+    slot: 30
+    item: BEEF
+    glow: false
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "Champagne"
+  implants:
+    name: "&4Rampage"
+    enabled: false
+    slot: 32
+    item: COW_SPAWN_EGG
+    glow: false
+    price: 200
+    lore:
+      - "&3Price: 200"
+      - "Champagne"
