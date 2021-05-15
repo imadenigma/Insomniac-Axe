@@ -14,11 +14,7 @@ import net.milkbowl.vault.economy.Economy
 
 @Plugin(
     name = "InsomniacAxe",
-    apiVersion = "1.15",
-    depends = [
-        PluginDependency("Vault"),
-        PluginDependency("ShopGUIPlus")
-    ]
+    apiVersion = "1.15"
 )
 class InsomniacAxe : ExtendedJavaPlugin() {
 
@@ -35,6 +31,7 @@ class InsomniacAxe : ExtendedJavaPlugin() {
         registerCommand(PumpkinTop(), "pumpkintop")
         manager = Manager()
         manager!!.loadEnchantsFactory()
+        manager!!.loadAxes()
         manager!!.loadUsers()
         registerListeners()
         setupEconomy()
@@ -48,6 +45,7 @@ class InsomniacAxe : ExtendedJavaPlugin() {
     override fun disable() {
         // Plugin shutdown logic
         manager!!.saveUsers()
+        manager!!.saveAxes()
     }
 
     private fun setupEconomy() {

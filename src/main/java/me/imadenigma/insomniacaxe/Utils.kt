@@ -1,9 +1,10 @@
 
 package me.imadenigma.insomniacaxe
 
-import me.imadenigma.insomniacaxe.holder.AxeHolder
-import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
+import com.google.common.collect.Lists
 import me.imadenigma.insomniacaxe.enchant.Enchant
+import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
+import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.lucko.helper.Helper
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -14,6 +15,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
+import org.jetbrains.annotations.NotNull
 import java.io.File
 
 fun File.makeReady() {
@@ -45,7 +47,7 @@ fun Block.isInsoBlock() : Boolean {
 }
 
 fun MutableList<Enchant>.ordered(): List<Enchant> {
-    return this.sortedBy { it::class.java.getAnnotation(EnchPriority::class.java).priority }
+    return this.filter { it.isEnabled }.sortedBy { it::class.java.getAnnotation(EnchPriority::class.java).priority }
 }
 
 fun Block.addDrop(amount: Int,block: Block) {
@@ -75,4 +77,14 @@ fun Event.getUser() : AxeHolder? {
     if (this is BlockBreakEvent) return AxeHolder.getHolder(this.player)
     if (this is PlayerItemHeldEvent) return AxeHolder.getHolder(this.player)
     return null
+}
+
+fun axeLore(level: Int, blocks: Long, max: Long): List<String> {
+    return Lists.asList(
+        ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------"), arrayOf(
+            ChatColor.translateAlternateColorCodes('&', "&7Level: &b$level"),
+            ChatColor.translateAlternateColorCodes('&', "&7Blocks: &b$blocks&7/&b$max"),
+            ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------")
+        )
+    )
 }

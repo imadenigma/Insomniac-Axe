@@ -2,11 +2,9 @@ package me.imadenigma.insomniacaxe.holder
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import me.imadenigma.insomniacaxe.Configuration
+import me.imadenigma.insomniacaxe.*
 import me.imadenigma.insomniacaxe.axe.Axe
-import me.imadenigma.insomniacaxe.colorize
-import me.imadenigma.insomniacaxe.getDisplayName
-import me.imadenigma.insomniacaxe.setDisplayName
+import me.imadenigma.insomniacaxe.axe.AxeLevel
 import me.lucko.helper.Services
 import me.lucko.helper.config.ConfigurationNode
 import me.lucko.helper.gson.GsonSerializable
@@ -14,12 +12,14 @@ import me.lucko.helper.gson.JsonBuilder
 import me.lucko.helper.utils.Log
 import me.mattstudios.mfgui.gui.components.ItemNBT
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import java.lang.IllegalArgumentException
 import java.util.*
+import kotlin.NoSuchElementException
 
-class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>, var balance: Long) : GsonSerializable, Currency {
+class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<String> = mutableListOf(), var balance: Long = 0L, var brokenBlocks: Long = 0L, var brokenPumps: Long = 0L) : GsonSerializable, Currency {
     private val configuration : ConfigurationNode
     val drops = mutableSetOf<ItemStack>()
     var zeus = false
@@ -38,56 +38,57 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>, va
     fun isHoldingInsoAxe() : Boolean {
         if (!offlinePlayer.isOnline) return false
         if (!this.isHoldingAxe()) return false
-        try {
-            UUID.fromString(ItemNBT.getNBTTag(this.offlinePlayer.player!!.inventory.itemInMainHand, "uuid"))
-        }catch (e: IllegalArgumentException) {
-            return false
-        }
-        return this.axes.isNotEmpty()
+        return Axe.axes.containsKey(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid"))
     }
 
     fun countBreakingBlocks() {
         if (!offlinePlayer.isOnline) return
         if (!this.isHoldingInsoAxe()) return
-        val axe = getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid"))) ?: return
+        val axe = getAxeByUUID(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid")) ?: return
         axe.brokenBlocks++
     }
 
     fun getAxeInMainHand(): Axe? {
-        if (!offlinePlayer.isOnline) return null
-        if (!this.isHoldingInsoAxe()) return null
-        return getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand, "uuid")))
+        return getAxeByUUID(ItemNBT.getNBTTag(offlinePlayer.player?.inventory?.itemInMainHand ?: ItemStack(Material.AIR), "uuid"))
     }
 
     override fun serialize(): JsonElement {
         val jsonArray = JsonArray()
         axes.forEach {
-            jsonArray.add(it.serialize())
+            jsonArray.add(it)
         }
         return JsonBuilder.`object`()
             .add("uuid", offlinePlayer.uniqueId.toString())
             .add("balance",this.balance)
-            .add("axes", jsonArray)
+            .add("blocks", this.brokenBlocks)
+            .add("pumpkins", this.brokenPumps)
             .build()
     }
 
     fun giveAxe(axe: Axe) : Boolean {
-        if (!this.offlinePlayer.isOnline) return false
-        val player = this.offlinePlayer.player
+        val player = this.offlinePlayer.player ?: let {
+            println("player is null , line 71, AxeHolder.kt")
+            return false
+        }
         val configuration = Services.load(Configuration::class.java)
         var ax = ItemStack(axe.material)
         ax.setDisplayName(configuration.configNode.getNode("axe-name").getString("null"))
+        val lore = ax.itemMeta.lore ?: mutableListOf()
+        lore.addAll(
+            axeLore(axe.level, axe.brokenBlocks, AxeLevel.blocksToNextLevel[axe.level]!!.toLong())
+        )
         ax = ItemNBT.setNBTTag(ax, "uuid", axe.uuid.toString())
         if (player?.inventory?.firstEmpty() == -1) {
             player.world.dropItem(player.location,ax )
         }else player?.inventory?.addItem(ax)
-        this.axes.add(axe)
+        this.axes.add(axe.uuid.toString())
+        Axe.axes[axe.uuid.toString()] = axe
         println("donated")
         return true
     }
 
-    fun getAxeByUUID(uuid: UUID) : Axe? {
-        return this.axes.stream().filter { it.uuid == uuid }.findAny().orElse(null)
+    fun getAxeByUUID(uuid: String) : Axe? {
+        return Axe.axes[uuid]
     }
 
     private fun isHoldingAxe() : Boolean {
@@ -103,23 +104,25 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>, va
 
         fun getHolder(offlinePlayer: OfflinePlayer): AxeHolder {
 
-            val optional =  users.stream().filter { it.offlinePlayer.uniqueId == offlinePlayer.uniqueId }.findAny()
+            val optional =  users.stream().filter {
+                val bool = it.offlinePlayer.uniqueId == offlinePlayer.uniqueId
+                println("optional$bool")
+                return@filter bool
+            }.findAny()
             if (optional.isPresent) {
                 return optional.get()
             }
-            return AxeHolder(offlinePlayer, mutableListOf(), 0L)
+            return AxeHolder(offlinePlayer, mutableListOf())
         }
 
         fun deserialize(element: JsonElement) {
             val objet = element.asJsonObject
             val uuid = UUID.fromString(objet.get("uuid").asString)
             val balance = objet.get("balance").asLong
-            val axeList = mutableListOf<Axe>()
-            objet.get("axes").asJsonArray.map {
-                axeList.add(Axe.deserialize(it))
-            }
+            val brokenBlocks = objet.get("blocks").asLong
+            val brokenPumps = objet.get("pumpkins").asLong
             if (users.any { it.offlinePlayer.uniqueId == uuid }) return
-            AxeHolder(Bukkit.getOfflinePlayer(uuid),axeList, balance)
+            AxeHolder(Bukkit.getOfflinePlayer(uuid), balance = balance, brokenBlocks = brokenBlocks, brokenPumps = brokenPumps)
         }
     }
 
@@ -129,6 +132,27 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, val axes: MutableList<Axe>, va
 
     override fun take(amount: Long) {
         this.balance -= balance
+    }
+
+    fun increaseBlocks() {
+        this.brokenBlocks++
+        val item = this.offlinePlayer.player!!.inventory.itemInMainHand
+        val meta = item.itemMeta
+        val lore = meta.lore ?: mutableListOf()
+        if (lore[lore.size - 1].contains("--------")) {
+            for (i in 1..4) {
+                try {
+                    lore.removeLast()
+                } catch (e: NoSuchElementException) {
+                }
+            }
+        }
+        val axe = getAxeInMainHand()!!
+        lore.addAll(
+            axeLore(axe.level, axe.brokenBlocks, AxeLevel.blocksToNextLevel[axe.level]!!.toLong())
+        )
+        meta.lore = lore
+        item.itemMeta = meta
     }
 
 

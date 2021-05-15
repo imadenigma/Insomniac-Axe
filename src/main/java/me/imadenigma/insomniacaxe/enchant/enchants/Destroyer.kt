@@ -36,7 +36,6 @@ class Destroyer(
                 user.drops.forEach {
                     it.amount += target.drops.first().amount
                 }
-                user.countBreakingBlocks()
                 target.drops.clear()
                 target.type = Material.AIR
                 target.state.update()

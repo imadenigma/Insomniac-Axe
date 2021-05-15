@@ -28,17 +28,14 @@ class Zeus(
         val random = RandomUtils.nextInt(100)
         if (random > percentage) return
         val user = e.getUser()!!
-        var blocksSize = 0
         val axe = user.getAxeInMainHand()!!
         getNearbyBlocks(e.block.location, 30)
-            .filter { it.isInsoBlock() }
             .filter { it.type == e.block.type }
             .forEach {
                 user.drops.forEach { drop -> drop.amount += 1 }
                 e.player.world.strikeLightningEffect(it.location)
                 it.type = Material.AIR
                 it.state.update()
-                blocksSize++
             }
         user.drops.forEach { drop -> drop.amount -= 1 }
         user.zeus = true
@@ -52,10 +49,14 @@ class Zeus(
                 e.player.giveItem(it)
                 println("w dbb?")
             }
+            axe.brokenBlocks += user.drops.first().amount
+            axe.brokenPumpkins += user.drops.first { it.type == Material.PUMPKIN }.amount
+            for (i in 2..user.drops.first().amount) {
+                user.increaseBlocks()
+            }
             user.drops.clear()
         }
 
-        axe.brokenBlocks += blocksSize
     }
 
     private fun getNearbyBlocks(location: Location, radius: Int): Set<Block> {
@@ -67,6 +68,6 @@ class Zeus(
                 }
             }
         }
-        return blocks
+        return blocks.filter { it.isInsoBlock() }.toSet()
     }
 }

@@ -17,7 +17,7 @@ import java.util.*
 class Axe(var level: Int, val material: Material, val enchants: MutableList<Enchant>, val uuid: UUID, var brokenBlocks: Long) : GsonSerializable {
 
     init {
-        axes.add(this)
+        axes[this.uuid.toString()] = this
     }
 
     var brokenPumpkins: Long = 0L
@@ -30,12 +30,13 @@ class Axe(var level: Int, val material: Material, val enchants: MutableList<Ench
             .add("material",material.name)
             .add("uuid", this.uuid.toString())
             .add("blocks",this.brokenBlocks)
+            .add("pumpkin",this.brokenPumpkins)
             .add("enchants", jsonArray)
             .build()
     }
 
     companion object {
-        val axes = mutableSetOf<Axe>()
+        val axes = mutableMapOf<String, Axe>()
         fun deserialize(element: JsonElement) : Axe {
             val objet = element.asJsonObject
             val level = objet.get("level").asInt

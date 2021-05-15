@@ -13,6 +13,7 @@ import me.mattstudios.mfgui.gui.components.ItemBuilder
 import me.mattstudios.mfgui.gui.components.ItemNBT
 import me.mattstudios.mfgui.gui.guis.Gui
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.streams.toList
@@ -41,11 +42,13 @@ class EnchantGui(player: Player, lines: Int, title: String) {
                     lore.add("&3You already own this enchant".colorize())
                 }
             }
+            val prefix = if (!enchant.isEnabled) "&m".colorize()
+            else ""
             lore.forEach { it.colorize() }
             val item = ItemBuilder.from(enchant.material)
                 .glow(enchant.isGlowing)
                 .setLore(lore)
-                .setName(enchant.name)
+                .setName(ChatColor.getLastColors(enchant.name) + prefix.colorize() + ChatColor.stripColor(enchant.name))
                 .asGuiItem {
                     it.isCancelled = true
                     if (balanceCheck) {
@@ -65,7 +68,7 @@ class EnchantGui(player: Player, lines: Int, title: String) {
                         return@asGuiItem
                     }
                     val axe =
-                        user.getAxeByUUID(UUID.fromString(ItemNBT.getNBTTag(player.inventory.itemInMainHand, "uuid")))
+                        user.getAxeByUUID(ItemNBT.getNBTTag(player.inventory.itemInMainHand, "uuid"))
                             ?: run {
                                 player.sendMessage("&4Can't get the axe, try again".colorize())
                                 return@asGuiItem

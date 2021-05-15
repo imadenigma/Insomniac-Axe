@@ -1,6 +1,7 @@
 package me.imadenigma.insomniacaxe.listeners
 
 import me.imadenigma.insomniacaxe.*
+import me.imadenigma.insomniacaxe.axe.Axe
 import me.imadenigma.insomniacaxe.axe.AxeLevel
 import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.lucko.helper.Schedulers
@@ -24,55 +25,36 @@ class EnchantListeners : Listener {
         val user = AxeHolder.getHolder(e.player)
         if (!user.isHoldingInsoAxe()) return
         val nbtVal = ItemNBT.getNBTTag(e.player.inventory.itemInMainHand, "uuid")
-        val uuid = run {
-            try {
-                UUID.fromString(nbtVal)
-            } catch (e: IllegalArgumentException) {
-                return
-            }
+        val axe = user.getAxeByUUID(nbtVal) ?: kotlin.run {
+            println("hna lprblm")
+            return
         }
-        val axe = user.getAxeByUUID(uuid) ?: return
-        user.give(Manager.coins);e.isDropItems = false;user.drops.addAll(e.block.drops);axe.enchants.ordered().forEach { it.function(e) }
+        user.give(Manager.coins);user.drops.addAll(e.block.drops);axe.enchants.ordered().forEach { it.function(e) }
+        for(i in 1..user.drops.first().amount) {
+            user.increaseBlocks()
+        }
         if (e.block.isInsoBlock()) {
-            if (AxeLevel.isFrenzy) user.give(Manager.coins)
-            e.block.drops.clear()
-            axe.brokenBlocks++
-            if (e.block.type == Material.PUMPKIN) axe.brokenPumpkins++
-            if (!user.zeus) {
-                user.drops.forEach {
-                    e.block.world.dropItem(e.block.location, it)
+            if (e.block.type == Material.PUMPKIN) user.brokenPumps++
+            if (user.drops.isNotEmpty()) {
+                axe.brokenBlocks += user.drops.first().amount
+                e.isDropItems = false
+                if (e.block.type == Material.PUMPKIN) axe.brokenPumpkins += user.drops.first { it.type == Material.PUMPKIN }.amount
+                if (!user.zeus) {
+                    user.drops.forEach {
+                        e.block.world.dropItem(e.block.location, it)
+                    }
                 }
 
             }
+            if (AxeLevel.isFrenzy) user.give(Manager.coins)
+
             if (AxeLevel.getBlocksToNextLevel(axe.level) <= axe.brokenBlocks) {
                 if (axe.level != AxeLevel.blocksToNextLevel.size) axe.level++
             }
 
-        }
+        }else user.increaseBlocks()
         user.drops.clear()
 
-    }
-
-    @EventHandler
-    fun onAxeHold(e: PlayerItemHeldEvent) {
-        Schedulers.sync().runLater({
-            val user = AxeHolder.getHolder(e.player)
-            if (!user.isValid()) return@runLater
-            if (!user.isHoldingInsoAxe()) {
-                user.axes.forEach { axe ->
-                    axe.enchants.forEach {
-                        it.function(e)
-                    }
-                }
-                return@runLater
-            }
-            val nbtVal = ItemNBT.getNBTTag(e.player.inventory.itemInMainHand, "uuid")
-            val uuid = UUID.fromString(nbtVal)
-            val axe = user.getAxeByUUID(uuid) ?: return@runLater
-            for (ench in axe.enchants.ordered()) {
-                ench.function(e)
-            }
-        }, 3L)
     }
 
     @EventHandler

@@ -9,9 +9,11 @@ import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.lucko.helper.Services
 import me.lucko.helper.config.ConfigurationNode
+import net.brcdev.shopgui.ShopGuiPlusApi
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 import java.util.*
 
 @Suppress("JoinDeclarationAndAssignment")
@@ -214,9 +216,20 @@ class EnchantsFactory {
                 }
             }
             item.itemMeta.lore = lore
-
         }
 
+        enchants.values.filter { !it.isEnabled }.forEach { disabledEnchants.add(it) }
+
         Services.provide(EnchantsFactory::class.java, this)
+
+        Autosell.prices = mapOf(
+            Material.PUMPKIN to ShopGuiPlusApi.getItemStackPriceSell(ItemStack(Material.PUMPKIN)),
+            Material.MELON to ShopGuiPlusApi.getItemStackPriceSell(ItemStack(Material.MELON))
+        )
+        println(Autosell.prices)
+    }
+
+    companion object {
+        val disabledEnchants = mutableSetOf<Enchant>()
     }
 }

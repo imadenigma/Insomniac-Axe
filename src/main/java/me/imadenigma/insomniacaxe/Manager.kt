@@ -1,6 +1,7 @@
 package me.imadenigma.insomniacaxe
 
 import com.google.gson.JsonArray
+import me.imadenigma.insomniacaxe.axe.Axe
 import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.imadenigma.insomniacaxe.enchant.EnchantsFactory
 import me.imadenigma.insomniacaxe.enchant.enchants.DoubleCoins
@@ -39,6 +40,32 @@ class Manager {
             val array = JsonArray()
             for (user in AxeHolder.users) {
                 array.add(user.serialize())
+            }
+            val writer = FileWriter(file)
+            GsonProvider.writeElementPretty(writer,array)
+            writer.close()
+        }
+        Log.info("&aSaving took &4$ms ms".colorize())
+    }
+
+    fun loadAxes() {
+        val ms = measureTimeMillis {
+            val file = File(InsomniacAxe.singleton.dataFolder, "axes.json")
+            file.makeReady()
+            for (element in GsonProvider.parser().parse(FileReader(file)).asJsonArray) {
+                Axe.deserialize(element)
+            }
+        }
+        Log.info("&aLoading took &4$ms ms".colorize())
+    }
+
+    fun saveAxes() {
+        val file = File(InsomniacAxe.singleton.dataFolder, "axes.json")
+        file.makeReady()
+        val ms = measureTimeMillis {
+            val array = JsonArray()
+            for (axe in Axe.axes) {
+                array.add(axe.value.serialize())
             }
             val writer = FileWriter(file)
             GsonProvider.writeElementPretty(writer,array)

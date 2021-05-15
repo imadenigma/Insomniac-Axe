@@ -26,7 +26,7 @@ class Autosell(
         sellBlock(e.getUser()!!)
     }
     companion object {
-        private var prices: Map<Material, Double>? = null
+        var prices: Map<Material, Double>? = null
         fun sellBlock(user: AxeHolder) {
             val drops = user.drops
             if (prices == null) {
@@ -36,7 +36,11 @@ class Autosell(
                 )
             }
             for (drop in drops) {
-                val price = prices!![drop.type]!! * (1 + AxeLevel.boosters[user.getAxeInMainHand()!!.level]!!) * drop.amount
+                for (i in 1..drop.amount) {
+                    user.countBreakingBlocks()
+                }
+                val uniquePrice = prices!![drop.type]!!
+                val price = uniquePrice * (1 + AxeLevel.boosters[user.getAxeInMainHand()!!.level]!!) * drop.amount
                 InsomniacAxe.singleton.economy!!.depositPlayer(user.offlinePlayer,price.toDouble())
             }
             user.drops.clear()
