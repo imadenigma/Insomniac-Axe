@@ -19,5 +19,8 @@ class Test : TestCase() {
         var x: Int = 101
         x = (x * 1.5).toInt()
         println(x)
+        for (i in 0 until 1) {
+            println("mok")
+        }
     }
 }

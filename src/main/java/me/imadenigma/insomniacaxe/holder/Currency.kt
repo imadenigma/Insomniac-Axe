@@ -6,4 +6,6 @@ interface Currency {
 
     fun take(amount: Long)
 
+    fun set(amount: Long)
+
 }

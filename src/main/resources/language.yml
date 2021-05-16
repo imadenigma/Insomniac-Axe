@@ -1,8 +1,28 @@
 player-receive-axe: "&3Congrats you received an insomniac axe !"
 player-upgrade-level: "&3Congrats you upgraded your axe's level !"
-player-balance: "&4Your Nightmare gems balance: &a{0}" #{0} will be replaced by the value
 player-buy-enchant: "&eYou bought {0} Successfully" #{0} will be replaced by the enchant's name
 player-receive-ngems: "&aYou received {0} nightmare gems"
+sender-set-balance: "&7You sent {0} : {1}$" #{0} is the player and {1} is the amount
+receiver-set-balance: "&3Your balance now is: {0}" #{0} is the amount
+
+receiver-give-balance: "&aYou received {1} from {0}" #{0} is the player and {1} is the amount
+sender-give-balance: "You gave {0} {1}$"
+
+receiver-remove-balance: "&4{1}$ has been taken from your balance by {0}"
+sender-remove-balance: "&aYou took {1} from {0}'s balance"
+
+receiver-pay: "&3You received {1} from {0}"
+sender-pay: "&4You paid {1} to {0}"
+
+nightmare-balance: "Your balance: {1}"
+
+insomniac-help:
+  - "/Insomniacaxe give <player> (insomniacaxe.give.axe)"
+  - "/insomniacaxe reload (insomniacaxe.reload)"
+  - "/insomniacaxe set gems <player> <amount> (Insomniacaxe.set.gems)"
+  - "/Insomniacaxe give gems <player> <amount> (insomniacaxe.give.gems)"
+  - "/Insomniacaxe remove gems <player> <amount> (insomniacaxe.remove.gems)"
+
 
 
 enchants:

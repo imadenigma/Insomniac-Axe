@@ -1,14 +1,14 @@
 package me.imadenigma.insomniacaxe
 
-import me.imadenigma.insomniacaxe.commands.CoinsCommand
-import me.imadenigma.insomniacaxe.commands.GiveCommand
+import me.imadenigma.insomniacaxe.commands.GemsCommands
+import me.imadenigma.insomniacaxe.commands.InsomniacAxeCommands
 import me.imadenigma.insomniacaxe.commands.PumpkinTop
+import me.imadenigma.insomniacaxe.commands.Upgrade
 import me.imadenigma.insomniacaxe.listeners.EnchantListeners
 import me.imadenigma.insomniacaxe.listeners.PlayerListeners
 import me.lucko.helper.Helper
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.plugin.ap.Plugin
-import me.lucko.helper.plugin.ap.PluginDependency
 import net.milkbowl.vault.economy.Economy
 
 
@@ -26,9 +26,10 @@ class InsomniacAxe : ExtendedJavaPlugin() {
         // Plugin startup logic
         singleton = this
         Configuration()
-        registerCommand(GiveCommand(), "insomniac")
-        registerCommand(CoinsCommand(), "ngems")
+        registerCommand(InsomniacAxeCommands(), "insomniacaxe")
+        registerCommand(GemsCommands(), "nightmare")
         registerCommand(PumpkinTop(), "pumpkintop")
+        registerCommand(Upgrade(), "upgrade")
         manager = Manager()
         manager!!.loadEnchantsFactory()
         manager!!.loadAxes()

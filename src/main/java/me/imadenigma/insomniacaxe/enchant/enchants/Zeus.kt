@@ -30,6 +30,7 @@ class Zeus(
         val user = e.getUser()!!
         val axe = user.getAxeInMainHand()!!
         getNearbyBlocks(e.block.location, 30)
+            .filter { it.isInsoBlock() }
             .filter { it.type == e.block.type }
             .forEach {
                 user.drops.forEach { drop -> drop.amount += 1 }
@@ -48,11 +49,10 @@ class Zeus(
             user.drops.forEach {
                 e.player.giveItem(it)
                 println("w dbb?")
-            }
-            axe.brokenBlocks += user.drops.first().amount
-            axe.brokenPumpkins += user.drops.first { it.type == Material.PUMPKIN }.amount
-            for (i in 2..user.drops.first().amount) {
-                user.increaseBlocks()
+                for (i in 0 until it.amount) {
+                    axe.addBlock(true)
+                    user.countBreakingBlocks(true)
+                }
             }
             user.drops.clear()
         }

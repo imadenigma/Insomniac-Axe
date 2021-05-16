@@ -14,6 +14,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.ItemDespawnEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import java.util.*
@@ -69,6 +70,13 @@ class PlayerListeners : Listener {
             meta.lore = lore
             e.player.inventory.itemInMainHand.itemMeta = meta
         }
+    }
+
+    @EventHandler
+    fun onItemDamage(e: ItemDespawnEvent) {
+        val nbtVal = ItemNBT.getNBTTag(e.entity.itemStack, "uuid")
+        if (Axe.axes.containsKey(nbtVal))
+            println("Deleting the ${Axe.axes.remove(nbtVal)?.material?.name}, uuid: $nbtVal")
     }
 
     @EventHandler

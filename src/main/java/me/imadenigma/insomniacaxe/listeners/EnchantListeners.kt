@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockIgniteEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import java.util.*
+import kotlin.NoSuchElementException
 
 class EnchantListeners : Listener {
 
@@ -25,20 +26,11 @@ class EnchantListeners : Listener {
         val user = AxeHolder.getHolder(e.player)
         if (!user.isHoldingInsoAxe()) return
         val nbtVal = ItemNBT.getNBTTag(e.player.inventory.itemInMainHand, "uuid")
-        val axe = user.getAxeByUUID(nbtVal) ?: kotlin.run {
-            println("hna lprblm")
-            return
-        }
+        val axe = user.getAxeByUUID(nbtVal) ?: return
         user.give(Manager.coins);user.drops.addAll(e.block.drops);axe.enchants.ordered().forEach { it.function(e) }
-        for(i in 1..user.drops.first().amount) {
-            user.increaseBlocks()
-        }
         if (e.block.isInsoBlock()) {
-            if (e.block.type == Material.PUMPKIN) user.brokenPumps++
             if (user.drops.isNotEmpty()) {
-                axe.brokenBlocks += user.drops.first().amount
                 e.isDropItems = false
-                if (e.block.type == Material.PUMPKIN) axe.brokenPumpkins += user.drops.first { it.type == Material.PUMPKIN }.amount
                 if (!user.zeus) {
                     user.drops.forEach {
                         e.block.world.dropItem(e.block.location, it)
@@ -47,12 +39,19 @@ class EnchantListeners : Listener {
 
             }
             if (AxeLevel.isFrenzy) user.give(Manager.coins)
+        }
 
-            if (AxeLevel.getBlocksToNextLevel(axe.level) <= axe.brokenBlocks) {
-                if (axe.level != AxeLevel.blocksToNextLevel.size) axe.level++
+        if (AxeLevel.getBlocksToNextLevel(axe.level) <= axe.brokenBlocks) {
+            if (axe.level != AxeLevel.blocksToNextLevel.size) axe.level++
+        }
+
+        for (drop in user.drops ) {
+            for (i in 0 until drop.amount) {
+                val bool = drop.type == Material.PUMPKIN
+                axe.addBlock(bool)
+                user.countBreakingBlocks(bool)
             }
-
-        }else user.increaseBlocks()
+        }
         user.drops.clear()
 
     }

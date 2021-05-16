@@ -35,6 +35,11 @@ class Axe(var level: Int, val material: Material, val enchants: MutableList<Ench
             .build()
     }
 
+    fun addBlock(isInso: Boolean = false) {
+        brokenBlocks++
+        if (isInso) brokenPumpkins++
+    }
+
     companion object {
         val axes = mutableMapOf<String, Axe>()
         fun deserialize(element: JsonElement) : Axe {
@@ -44,6 +49,7 @@ class Axe(var level: Int, val material: Material, val enchants: MutableList<Ench
             val uuid = UUID.fromString(objet.get("uuid").asString)
             val array = objet.get("enchants").asJsonArray.map { it.asString }.toList()
             val brokenBlocks = objet.get("blocks").asLong
+            val brokenPumps = objet.get("pumpkin").asLong
             println(array)
             val enchants = mutableListOf<Enchant>()
             val names = Services.load(EnchantsFactory::class.java).enchants.values
@@ -52,7 +58,9 @@ class Axe(var level: Int, val material: Material, val enchants: MutableList<Ench
                 val ench = names.stream().filter { ChatColor.stripColor(it.name).equals(i,true) }.findAny().get()
                 enchants.add(ench)
             }
-            return Axe(level,material!!,enchants, uuid, brokenBlocks)
+            val axe = Axe(level,material!!,enchants, uuid, brokenBlocks)
+            axe.brokenPumpkins = brokenPumps
+            return axe
         }
 
         fun isAxe(item: ItemStack): Boolean {
