@@ -4,6 +4,7 @@ import me.imadenigma.insomniacaxe.InsomniacAxe
 import me.imadenigma.insomniacaxe.axe.Axe
 import me.imadenigma.insomniacaxe.colorize
 import me.imadenigma.insomniacaxe.getDisplayName
+import me.imadenigma.insomniacaxe.gui.EnchantGui
 import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.imadenigma.insomniacaxe.ordered
 import me.lucko.helper.Schedulers
@@ -14,7 +15,9 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.entity.ItemDespawnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import java.util.*
@@ -76,7 +79,7 @@ class PlayerListeners : Listener {
     fun onItemDamage(e: ItemDespawnEvent) {
         val nbtVal = ItemNBT.getNBTTag(e.entity.itemStack, "uuid")
         if (Axe.axes.containsKey(nbtVal))
-            println("Deleting the ${Axe.axes.remove(nbtVal)?.material?.name}, uuid: $nbtVal")
+            ("Deleting the ${Axe.axes.remove(nbtVal)?.material?.name}, uuid: $nbtVal")
     }
 
     @EventHandler
@@ -137,6 +140,16 @@ class PlayerListeners : Listener {
                 ench.function(e)
             }
         }, 3L)
+    }
+
+    @EventHandler
+    fun onAxeClick(e: PlayerInteractEvent) {
+        if (!e.hasItem()) return
+        if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_AIR) {
+            val user = AxeHolder.getHolder(e.player)
+            val axe = user.getAxeInMainHand() ?: return
+            EnchantGui.openGui(e.player)
+        }
     }
 
 }

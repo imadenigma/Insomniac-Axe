@@ -7,14 +7,17 @@ import me.imadenigma.insomniacaxe.colorize
 import me.imadenigma.insomniacaxe.enchant.enchants.*
 import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.holder.AxeHolder
+import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
 import me.lucko.helper.config.ConfigurationNode
+import net.brcdev.shopgui.ShopGuiPlugin
 import net.brcdev.shopgui.ShopGuiPlusApi
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Suppress("JoinDeclarationAndAssignment")
 class EnchantsFactory {
@@ -31,7 +34,7 @@ class EnchantsFactory {
         var isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        var name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        var name = (prefix + this.config.getNode("name").getString("")).colorize()
         var slot = this.config.getNode("slot").getInt(1)
         var material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         var isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -43,7 +46,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -56,7 +59,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -68,7 +71,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         var percentage = this.config.getNode("percentage").getFloat(50F)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
@@ -82,7 +85,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -95,7 +98,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -108,7 +111,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -120,7 +123,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -134,7 +137,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -147,7 +150,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -160,7 +163,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -174,7 +177,7 @@ class EnchantsFactory {
         isEnabled = this.config.getNode("enabled").getBoolean(true)
         prefix = if (!isEnabled) "&m"
         else ""
-        name = (prefix +  this.config.getNode("name").getString("")).colorize()
+        name = (prefix + this.config.getNode("name").getString("")).colorize()
         slot = this.config.getNode("slot").getInt(1)
         material = this.config.getNode("item").getValue(TypeToken.of(Material::class.java)) ?: Material.BEACON
         isGlowing = this.config.getNode("glow").getBoolean(false)
@@ -212,7 +215,7 @@ class EnchantsFactory {
             axe.enchants.filter { ench -> !ench.isEnabled }.forEach { ench ->
                 lore.stream().filter { s -> ChatColor.stripColor(s) == ench.name }.forEach { str ->
                     lore.remove(str)
-                    lore.add(1,"&m".colorize() + str)
+                    lore.add(1, "&m".colorize() + str)
                 }
             }
             item.itemMeta.lore = lore
@@ -222,11 +225,14 @@ class EnchantsFactory {
 
         Services.provide(EnchantsFactory::class.java, this)
 
-        Autosell.prices = mapOf(
-            Material.PUMPKIN to ShopGuiPlusApi.getItemStackPriceSell(ItemStack(Material.PUMPKIN)),
-            Material.MELON to ShopGuiPlusApi.getItemStackPriceSell(ItemStack(Material.MELON))
-        )
-        println(Autosell.prices)
+        Schedulers.sync().runLater({
+            Autosell.prices = mapOf(
+                Material.PUMPKIN to ShopGuiPlusApi.getItemStackShopItem(ItemStack(Material.PUMPKIN)).sellPrice,
+                Material.MELON to ShopGuiPlusApi.getItemStackShopItem(ItemStack(Material.MELON)).sellPrice
+            )
+        }, 5, TimeUnit.SECONDS)
+
+
     }
 
     companion object {

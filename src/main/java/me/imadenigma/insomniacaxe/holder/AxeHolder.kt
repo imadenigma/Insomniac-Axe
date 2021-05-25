@@ -22,6 +22,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, var balance: Long = 0L, var br
     private val configuration : ConfigurationNode
     val drops = mutableSetOf<ItemStack>()
     var zeus = false
+    var isLowConf = false
     init {
         users.add(this)
         this.configuration = Services.load(Configuration::class.java).configNode
@@ -61,10 +62,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, var balance: Long = 0L, var br
     }
 
     fun giveAxe(axe: Axe) : Boolean {
-        val player = this.offlinePlayer.player ?: let {
-            println("player is null , line 71, AxeHolder.kt")
-            return false
-        }
+        val player = this.offlinePlayer.player ?: return false
         val configuration = Services.load(Configuration::class.java)
         var ax = ItemStack(axe.material)
         ax.setDisplayName(configuration.configNode.getNode("axe-name").getString("null"))
@@ -80,11 +78,12 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, var balance: Long = 0L, var br
         meta.addEnchant(Enchantment.SWEEPING_EDGE,5,true)
         ax.itemMeta = meta
         ax = ItemNBT.setNBTTag(ax, "uuid", axe.uuid.toString())
-        if (player.inventory.firstEmpty() == -1) {
-            player.world.dropItem(player.location,ax )
-        }else player.inventory.addItem(ax)
+        val firstEmpty = player.inventory.firstEmpty()
+        if (firstEmpty == -1) {
+            player.world.dropItem(player.location,ax)
+        }else player.inventory.setItem(firstEmpty, ax)
         Axe.axes[axe.uuid.toString()] = axe
-        println("donated")
+
         return true
     }
 
@@ -106,9 +105,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, var balance: Long = 0L, var br
         fun getHolder(offlinePlayer: OfflinePlayer): AxeHolder {
 
             val optional =  users.stream().filter {
-                val bool = it.offlinePlayer.uniqueId == offlinePlayer.uniqueId
-                println("optional$bool")
-                return@filter bool
+                return@filter it.offlinePlayer.uniqueId == offlinePlayer.uniqueId
             }.findAny()
             if (optional.isPresent) {
                 return optional.get()
@@ -140,14 +137,14 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, var balance: Long = 0L, var br
     }
 
     override fun take(amount: Long) {
-        this.balance -= balance
+        this.balance -= amount
     }
 
     override fun set(amount: Long) {
         this.balance = amount
     }
 
-    fun increaseBlocks() {
+    private fun increaseBlocks() {
         this.brokenBlocks++
         val item = this.offlinePlayer.player!!.inventory.itemInMainHand
         val meta = item.itemMeta
@@ -167,7 +164,7 @@ class AxeHolder(val offlinePlayer: OfflinePlayer, var balance: Long = 0L, var br
         )
         meta.lore = lore
         item.itemMeta = meta
-        println("updating lore")
+        ("updating lore")
     }
 
 

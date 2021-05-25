@@ -26,7 +26,7 @@ class EnchantGui(player: Player, lines: Int, title: String) {
         val user = AxeHolder.getHolder(player)
         for (enchant in enchants) {
             val lore = enchant.lore.stream().map { it.colorize() }.toList().toMutableList()
-            val balanceCheck = InsomniacAxe.singleton.economy!!.getBalance(player) < enchant.price
+            val balanceCheck = user.balance < enchant.price
             var owningCheck = false
             if (balanceCheck) {
                 lore.add("&4You don't have balance to purchase it".colorize())
@@ -74,7 +74,7 @@ class EnchantGui(player: Player, lines: Int, title: String) {
                                 return@asGuiItem
                             }
                     axe.enchants.add(enchant)
-                    InsomniacAxe.singleton.economy!!.withdrawPlayer(player, enchant.price)
+                    user.take(enchant.price.toLong())
                     player.sendMessage("&eYou bought ${enchant.name} Successfully".colorize())
                     player.inventory.itemInMainHand.addEnchant(enchant)
                     player.closeInventory()

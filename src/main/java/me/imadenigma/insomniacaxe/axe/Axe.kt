@@ -50,11 +50,10 @@ class Axe(var level: Int, val material: Material, val enchants: MutableList<Ench
             val array = objet.get("enchants").asJsonArray.map { it.asString }.toList()
             val brokenBlocks = objet.get("blocks").asLong
             val brokenPumps = objet.get("pumpkin").asLong
-            println(array)
             val enchants = mutableListOf<Enchant>()
             val names = Services.load(EnchantsFactory::class.java).enchants.values
             for (i in array) {
-                println(i)
+                (i)
                 val ench = names.stream().filter { ChatColor.stripColor(it.name).equals(i,true) }.findAny().get()
                 enchants.add(ench)
             }

@@ -1,9 +1,10 @@
 axe-name: "Insomniac Axe"
 coins-to-add: 50
 gui:
-  lines: 3
+  lines: 5
   title: "&aEnchants Shop"
 pumpkin-top:
+  msg: "&aPumpkins top 5"
   format: "&3{0} --> {1}" #0 is the name of player and 1 is the balance
   size: 5 #how many players in the list
 

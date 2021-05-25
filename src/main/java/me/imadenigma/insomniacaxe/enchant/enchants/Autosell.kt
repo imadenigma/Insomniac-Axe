@@ -7,6 +7,7 @@ import me.imadenigma.insomniacaxe.enchant.priority.EnchPriority
 import me.imadenigma.insomniacaxe.enchant.Enchant
 import me.imadenigma.insomniacaxe.enchant.priority.Priority
 import me.imadenigma.insomniacaxe.getUser
+import me.imadenigma.insomniacaxe.isInsoBlock
 import net.brcdev.shopgui.ShopGuiPlusApi
 import org.bukkit.Material
 import org.bukkit.event.Event
@@ -23,32 +24,31 @@ class Autosell(
 
     override fun function(e: Event) {
         if (e !is BlockBreakEvent) return
-        sellBlock(e.getUser()!!)
+        if (e.block.isInsoBlock())
+            sellBlock(e.getUser()!!)
     }
     companion object {
         var prices: Map<Material, Double>? = null
 
         fun sellBlock(user: AxeHolder) {
             val drops = user.drops
-            if (prices == null) {
-                prices = mapOf(
-                    Material.PUMPKIN to ShopGuiPlusApi.getItemStackPriceSell(ItemStack(Material.PUMPKIN)),
-                    Material.MELON to ShopGuiPlusApi.getItemStackPriceSell(ItemStack(Material.MELON))
-                )
-            }
             for (drop in drops) {
-
                 for (i in 0 until drop.amount) {
                     val bool = drop.type == Material.PUMPKIN
                     user.getAxeInMainHand()?.addBlock(bool)
                     user.countBreakingBlocks(bool)
                 }
-
-                val uniquePrice = prices!![drop.type]!!
+                val uniquePrice =  getSellPrice(drop.type)
                 val price = uniquePrice * (1 + AxeLevel.boosters[user.getAxeInMainHand()!!.level]!!) * drop.amount
-                InsomniacAxe.singleton.economy!!.depositPlayer(user.offlinePlayer,price.toDouble())
+                InsomniacAxe.singleton.economy!!.depositPlayer(user.offlinePlayer, price)
             }
             user.drops.clear()
+        }
+
+        private fun getSellPrice(material: Material): Double {
+            return (prices?.get(material) ?: let {
+                ShopGuiPlusApi.getItemStackShopItem(ItemStack(material)).sellPrice
+            })
         }
     }
 }

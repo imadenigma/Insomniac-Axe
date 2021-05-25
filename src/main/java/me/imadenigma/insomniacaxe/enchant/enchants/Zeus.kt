@@ -29,18 +29,20 @@ class Zeus(
         if (random > percentage) return
         val user = e.getUser()!!
         val axe = user.getAxeInMainHand()!!
+        println("here")
         getNearbyBlocks(e.block.location, 30)
             .filter { it.isInsoBlock() }
             .filter { it.type == e.block.type }
             .forEach {
                 user.drops.forEach { drop -> drop.amount += 1 }
-                e.player.world.strikeLightningEffect(it.location)
+                if (!user.isLowConf)
+                    e.player.world.strikeLightningEffect(it.location)
                 it.type = Material.AIR
                 it.state.update()
             }
         user.drops.forEach { drop -> drop.amount -= 1 }
         user.zeus = true
-        if (!axe.enchants.any { it is Autosell }) {
+        if (!(axe.enchants.any { it is Autosell })) {
             if (axe.enchants.any { it is DoubleDrops }) {
                 user.drops.forEach {
                     it.amount *= 2
@@ -48,13 +50,14 @@ class Zeus(
             }
             user.drops.forEach {
                 e.player.giveItem(it)
-                println("w dbb?")
                 for (i in 0 until it.amount) {
                     axe.addBlock(true)
                     user.countBreakingBlocks(true)
                 }
             }
             user.drops.clear()
+        } else {
+            Autosell.sellBlock(user)
         }
 
     }

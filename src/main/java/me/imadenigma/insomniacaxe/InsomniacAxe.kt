@@ -10,6 +10,7 @@ import me.lucko.helper.Helper
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.plugin.ap.Plugin
 import net.milkbowl.vault.economy.Economy
+import kotlin.system.measureTimeMillis
 
 
 @Plugin(
@@ -31,7 +32,7 @@ class InsomniacAxe : ExtendedJavaPlugin() {
         registerCommand(PumpkinTop(), "pumpkintop")
         registerCommand(Upgrade(), "upgrade")
         manager = Manager()
-        manager!!.loadEnchantsFactory()
+        println("&7loading of enchantments took ${measureTimeMillis { manager!!.loadEnchantsFactory() }} ms ".colorize())
         manager!!.loadAxes()
         manager!!.loadUsers()
         registerListeners()

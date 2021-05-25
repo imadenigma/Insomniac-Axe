@@ -23,6 +23,7 @@ class Manager {
     }
 
     fun loadUsers() {
+        Log.info("&aLoading Users...".colorize())
         val ms = measureTimeMillis {
             val file = File(InsomniacAxe.singleton.dataFolder, "users.json")
             file.makeReady()
@@ -30,10 +31,11 @@ class Manager {
                 AxeHolder.deserialize(element)
             }
         }
-        Log.info("&aLoading took &4$ms ms".colorize())
+        Log.info("&aLoading Users took &4$ms ms".colorize())
     }
 
     fun saveUsers() {
+        Log.info("&aSaving Users...".colorize())
         val file = File(InsomniacAxe.singleton.dataFolder, "users.json")
         file.makeReady()
         val ms = measureTimeMillis {
@@ -49,6 +51,7 @@ class Manager {
     }
 
     fun loadAxes() {
+        Log.info("&aLoading axes...".colorize())
         val ms = measureTimeMillis {
             val file = File(InsomniacAxe.singleton.dataFolder, "axes.json")
             file.makeReady()
@@ -56,10 +59,11 @@ class Manager {
                 Axe.deserialize(element)
             }
         }
-        Log.info("&aLoading took &4$ms ms".colorize())
+        Log.info("&aLoading of axes took &4$ms ms".colorize())
     }
 
     fun saveAxes() {
+        Log.info("&3Saving axes...".colorize())
         val file = File(InsomniacAxe.singleton.dataFolder, "axes.json")
         file.makeReady()
         val ms = measureTimeMillis {

@@ -6,11 +6,10 @@ import me.imadenigma.insomniacaxe.InsomniacAxe
 import me.imadenigma.insomniacaxe.axe.Axe
 import me.imadenigma.insomniacaxe.holder.AxeHolder
 import me.imadenigma.insomniacaxe.colorize
-import me.imadenigma.insomniacaxe.gui.EnchantGui
+import me.imadenigma.insomniacaxe.enchant.enchants.Zeus
 import me.lucko.helper.Helper
 import me.lucko.helper.Schedulers
 import me.lucko.helper.Services
-import me.mattstudios.mfgui.gui.components.ItemNBT
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -21,7 +20,6 @@ import java.util.*
 
 class InsomniacAxeCommands : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        // /insomniac give <player> <material> <level>
         if (args.isEmpty()) return false
         val language = Services.get(Configuration::class.java).get().languageNode
         if (args.size >= 4) {
@@ -43,7 +41,7 @@ class InsomniacAxeCommands : CommandExecutor {
                     player.sendMessage(receiverMsg.colorize())
                     sender.sendMessage(senderMsg.colorize())
                 }
-                if (args[0].equals("remove",true)) {
+                if (args[0].equals("remove", true)) {
                     val player = Bukkit.getPlayer(args[2]) ?: return false
                     val user = AxeHolder.getHolder(player)
                     var amount = 0L
@@ -64,7 +62,7 @@ class InsomniacAxeCommands : CommandExecutor {
             }
         }
         if (args[0].equals("give", true)) {
-            if (args[1].equals("gems",true)) {
+            if (args[1].equals("gems", true)) {
                 val player = Bukkit.getPlayer(args[2]) ?: return false
                 val user = AxeHolder.getHolder(player)
                 var amount = 0L
@@ -81,6 +79,7 @@ class InsomniacAxeCommands : CommandExecutor {
                         .replace("{1}", amount.toString())
                 player.sendMessage(receiverMsg.colorize())
                 sender.sendMessage(senderMsg.colorize())
+                return true
             }
             if (!sender.hasPermission("insomniac.give")) {
                 sender.sendMessage("&4You must have permission to execute this command".colorize())
@@ -112,6 +111,7 @@ class InsomniacAxeCommands : CommandExecutor {
             val holder = AxeHolder.getHolder(player)
             holder.giveAxe(axe)
             sender.sendMessage("&3You gave ${player.displayName} &3Axe successfully".colorize())
+            return true
         }
         if (args[0].equals("shop", true) && sender is Player) {
             return true
@@ -123,14 +123,32 @@ class InsomniacAxeCommands : CommandExecutor {
                 }, 10L
             )
             Helper.plugins().disablePlugin(InsomniacAxe.singleton)
+            return true
         }
-        if (args[0].equals("help",true)) {
+        if (args[0].equals("help", true)) {
             val list = language.getNode("insomniac-help").getList(TypeToken.of(String::class.java))
             list.forEach {
                 sender.sendMessage(it.colorize())
             }
+            return true
         }
-
+        if (args[0].equals("zeus", true)) {
+            if (args.size <= 1) return false
+            val user = AxeHolder.getHolder(sender as Player)
+            if (user.getAxeInMainHand()?.enchants?.any { it is Zeus } == true) {
+                if (args[1].equals("off", true)) {
+                    user.isLowConf = true
+                    val msg = language.getNode("zeus-off").getString("null")
+                    sender.sendMessage(msg.colorize())
+                    return true
+                }else if (args[1].equals("on", true)) {
+                    user.isLowConf = false
+                    val msg = language.getNode("zeus-on").getString("null")
+                    sender.sendMessage(msg.colorize())
+                    return true
+                }
+            }
+        }
         return false
     }
 }

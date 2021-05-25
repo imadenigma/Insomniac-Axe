@@ -22,8 +22,6 @@ class DoubleDrops(
         if (!e.block.isInsoBlock()) return
         e.block.drops.clear()
         val user = e.getUser()!!
-        println(user.drops)
         user.drops.forEach { it.amount *= 2 }
-        println(user.drops)
     }
 }

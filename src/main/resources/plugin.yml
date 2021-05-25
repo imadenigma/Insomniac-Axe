@@ -2,4 +2,4 @@ name: InsomniacAxe
 version: 1.15
 main: me.imadenigma.insomniacaxe.InsomniacAxe
 api-version: 1.15
-softdepend: [Vault, ShopGUIPlus]
+depend: [Vault, ShopGUIPlus]

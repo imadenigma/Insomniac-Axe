@@ -64,7 +64,7 @@ fun ItemStack.addEnchant(enchant: Enchant) {
     lore.add(0,enchant.name)
     meta.lore = lore
     this.itemMeta = meta
-    println("lore changed!")
+    ("lore changed!")
 }
 
 fun Player.giveItem(item: ItemStack) {
